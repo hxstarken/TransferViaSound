@@ -5,10 +5,13 @@
  *      Author: ken
  */
 
-#include <alsa/asoundlib.h>
+#include "SoundDevice.h"
 
 int main(int argc, char *argv[])
 {
+	SoundDevice a;
+	a.Init();
 
+	return 0;
 }
 
