@@ -13,23 +13,34 @@ SoundDevice::SoundDevice()
 	// TODO Auto-generated constructor stub
 	pcm_play_handle_ = nullptr;
 	pcm_capture_handle_ = nullptr;
-	pcm_name_ = "default";
+
+	char name[] = "default";
+	pcm_name_ = new char[sizeof(name)]();
+	memcpy(pcm_name_, name, sizeof(name));
+
 	stream_ = SND_PCM_STREAM_PLAYBACK;
 	open_mode_ = 0;
 	rate_ = 48000;
-	channels_ = 0;
-	buffer_size_ = 111111;
+	channels_ = 1;
+	buffer_size_ = 1024;
 }
 
 SoundDevice::~SoundDevice()
 {
 	// TODO Auto-generated destructor stub
-	snd_pcm_drain(pcm_play_handle_);
-	snd_pcm_close(pcm_play_handle_);
+	delete pcm_name_;
 
-	snd_pcm_drain(pcm_capture_handle_);
-	snd_pcm_close(pcm_capture_handle_);
+	if (pcm_play_handle_ != NULL)
+	{
+		snd_pcm_drain(pcm_play_handle_);
+		snd_pcm_close(pcm_play_handle_);
+	}
 
+	if (pcm_capture_handle_ != NULL)
+	{
+		snd_pcm_drain(pcm_capture_handle_);
+		snd_pcm_close(pcm_capture_handle_);
+	}
 }
 
 int SoundDevice::Init(void)
