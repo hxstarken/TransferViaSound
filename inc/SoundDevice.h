@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include <alsa/asoundlib.h>
 
+namespace TransferViaSound
+{
+
 class SoundDevice
 {
 public:
@@ -31,5 +34,7 @@ private:
 	unsigned int channels_; //声音通道数
 	unsigned long int buffer_size_; //缓冲大小
 };
+
+} /* namespace TransferViaSound */
 
 #endif /* SRC_SOUNDDEVICE_H_ */

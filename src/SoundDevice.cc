@@ -7,6 +7,9 @@
 
 #include "SoundDevice.h"
 
+namespace TransferViaSound
+{
+
 
 SoundDevice::SoundDevice()
 {
@@ -235,3 +238,5 @@ int SoundDevice::Receive(uint16_t *msg, int len)
 
 	return 0;
 }
+
+} /* namespace TransferViaSound */
