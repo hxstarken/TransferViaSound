@@ -45,7 +45,9 @@ SoundDevice::~SoundDevice()
 		snd_pcm_close(pcm_capture_handle_);
 	}
 }
-
+/** @brief init the sound device
+ * @return 0 if SUCCESS
+ */
 int SoundDevice::Init(void)
 {
 	int err = -1, dir = 0;
@@ -184,6 +186,11 @@ __open_play_err:
 	return err;
 }
 
+/** @brief send the message
+ * @msg the point of msg
+ * @len the length of msg
+ * @return 0 if SUCCESS
+ */
 int SoundDevice::Send(uint16_t *msg, int len)
 {
 	int err = -1;
@@ -214,6 +221,11 @@ int SoundDevice::Send(uint16_t *msg, int len)
 	return 0;
 }
 
+/** @brief 需接收到len长度后，或错误才可返回，
+ *
+ * @return 0 if SUCCESS
+ *
+ */
 int SoundDevice::Receive(uint16_t *msg, int len)
 {
 	int err = 1;

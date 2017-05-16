@@ -48,6 +48,11 @@ FFT::~FFT()
 	delete model_;
 }
 
+/** @brief when useing DoFFT function, Prepare must be using before it!
+ * @data the point of data which will do fft
+ * @size tte size of the data
+ * @return 0 if SUCCESS
+ */
 int FFT::Prepare(int16_t *data, int size)
 {
 	if (data==nullptr)
@@ -119,6 +124,9 @@ __malloc_in_err:
 	return -1;
 }
 
+/** @brief do fft, before call Dofft, must have call Prepare!!!
+ * @return 0 if SUCCESS *
+ */
 int FFT::DoFFT(void)
 {
 	int i = 0;
@@ -135,16 +143,14 @@ int FFT::DoFFT(void)
     {
     	model_[i] = sqrt(fft_out_[i][REAL]*fft_out_[i][REAL] + fft_out_[i][IMAG]*fft_out_[i][IMAG]);
     }
-//    //TEST
-//    int i = 0;
-//    for (i=0; i<size_; i++)
-//    {
-//    	std::cout << "REAL: " << fft_out_[i][0] <<"    IMAGE: "<< fft_out_[i][1] << std::endl;
-//    }
+
     return 0;
 
 }
-
+/** @brief return the model
+ * @num the number whate you whant
+ * @return the model
+ */
 double FFT::GetModel(int num)
 {
 	return model_[num];
@@ -164,9 +170,13 @@ void FFT::ToComplex()
 
 void FFT::DoWindow(void)
 {
-
+	//hamming
+	for (int i = 0; i < size_; i++)
+	{
+		fft_in_[i][REAL] *= (0.54f
+				- 0.46f * cos(M_PI * i / (size_ - 1)));
+	}
 }
-
 
 } /* namespace TransferViaSound */
 
