@@ -7,8 +7,8 @@
 
 #include <Soundify.h>
 #include "SoundifyUtils.h"
-
-#define RECEIVE_SIZE 8192
+#include "Config.h"
+#include <math.h>
 
 using namespace TransferViaSound;
 
@@ -21,21 +21,21 @@ static void ParaseFunc(void *arg)
 {
 	int err = 0, i = 0;
 	double current_model = 0, max_model = 0;
-	int max_model_num = 0;
+	uint16_t max_model_num = 0;
 	uint16_t freq = 0;
 	char data = 0;
 	FFT fft;
 	SoundifyUtils soundify_utils;
 
-	uint16_t rec_buf[RECEIVE_SIZE];
+	uint16_t rec_buf[Config::TIME_BAND];
 
 	ThreadArg *thread_arg = (ThreadArg *)arg;
-	fft.Prepare((int16_t *)rec_buf, RECEIVE_SIZE);
+	fft.Prepare((int16_t *)rec_buf, Config::TIME_BAND);
 
 	while (1)
 	{
 		//get voice data
-		err = thread_arg->sound_dev->Receive(rec_buf, RECEIVE_SIZE);
+		err = thread_arg->sound_dev->Receive(rec_buf, Config::TIME_BAND);
 		if (err)
 		{
 			continue;
@@ -44,7 +44,7 @@ static void ParaseFunc(void *arg)
 		fft.DoFFT();
 		//calculate max fft model
 		max_model = 0;
-		for (i=0; i<(RECEIVE_SIZE>>2); i++)
+		for (i=0; i<(Config::TIME_BAND>>2); i++)
 		{
 			current_model =  fft.GetModel(i);
 			if (current_model > max_model)
@@ -54,7 +54,7 @@ static void ParaseFunc(void *arg)
 			}
 		}
 
-		freq = soundify_utils.CalcFreq(max_model_num - 1);
+		freq = (max_model_num -1)*Config::SAMPLE_RATE/Config::TIME_BAND;
 		//CalcData
 		data = soundify_utils.CalcData(freq);
 		//put to ringbuf
@@ -159,9 +159,42 @@ __new_thread_arg_err:
 	return err;
 }
 
+int Soundify::Send(uint8_t *msg, int len)
+{
+	int i = 0, j = 0;
+	char *data = (char *)msg;
+	uint16_t freq;
+	int block = 0;
 
+	int16_t *audio = new int16_t[len * Config::SAMPLE_RATE];
 
+	if (audio == nullptr)
+	{
+		return -1;
+	}
 
+	for (i=0; i<len; i++)
+	{
+		block = i * Config::SAMPLE_RATE;
+		freq = soundify_utils_.CalcFreq(data[i]);
+
+		for (j = 0; j < Config::TIME_BAND; j++)
+		{	// Percorre o tamanho de cada banda de frequencia
+			double angle = 2.0 * j * freq * M_PI / Config::SAMPLE_RATE;// Realiza o calculo do angulo da frequencia
+//			list.add((short) (Math.sin(angle) * Config.MAX_SIGNAL_STRENGTH));
+			audio[block+j] = sin(angle) * Config::MAX_SIGNAL_STRENGTH;
+		}
+	}
+	sound_dev_->Send((uint16_t *)audio, len * Config::SAMPLE_RATE);
+
+	delete audio;
+	return 0;
+}
+
+int Soundify::Receive(uint8_t *msg, int len)
+{
+	return receive_ring_buf_->Get(msg, len);
+}
 
 
 } /* namespace TransferViaSound */

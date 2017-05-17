@@ -23,7 +23,7 @@ public:
 	/** @brief 计算出 num 对应的频率
 	 * @return freq
 	 */
-	uint16_t CalcFreq(int num);
+	uint16_t CalcFreq(char value);
 
 	/** @brief 计算出 freq 对应的字符
 	 * @return char

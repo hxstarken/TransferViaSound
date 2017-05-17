@@ -8,6 +8,7 @@
 #include <RingBuf.h>
 #include <string.h>
 #include <unistd.h>
+#include "Config.h"
 
 namespace TransferViaSound
 {
@@ -32,14 +33,14 @@ RingBuf::~RingBuf()
 int RingBuf::Put(uint8_t *data, int len)
 {
 	int capacity = 0, min_len = 0;
-//	const unsigned char *data = _data;
+
 	do
 	{
-		capacity = DATA_SIZE - tail_;
-		min_len = (len < capacity ? len: capacity);//min(len, capacity);
+		capacity = Config::RING_BUFFER_SIZE - tail_;
+		min_len = (len < capacity ? len: capacity);
 		memcpy(buf_+tail_, data, min_len);
 		tail_ += capacity;
-		if (tail_ >= DATA_SIZE) tail_ = 0;
+		if (tail_ >= Config::RING_BUFFER_SIZE) tail_ = 0;
 		data += min_len;
 		len -= min_len;
 
@@ -89,7 +90,7 @@ int RingBuf::GetOneChar(uint8_t *_data)
 		else
 		{
 			*_data = buf_[head_];
-			if (head_ >= DATA_SIZE)
+			if (head_ >= Config::RING_BUFFER_SIZE)
 			{
 				head_ = 0;
 			}

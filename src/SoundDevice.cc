@@ -6,6 +6,7 @@
  */
 
 #include "SoundDevice.h"
+#include "Config.h"
 
 namespace TransferViaSound
 {
@@ -23,9 +24,9 @@ SoundDevice::SoundDevice()
 
 	stream_ = SND_PCM_STREAM_PLAYBACK;
 	open_mode_ = 0;
-	rate_ = 48000;
+	rate_ = Config::SAMPLE_RATE;
 	channels_ = 1;
-	buffer_size_ = 1024;
+	buffer_size_ = Config::VOICE_TEMP_BUF_SIZE;
 }
 
 SoundDevice::~SoundDevice()

@@ -9,6 +9,7 @@
 #define RINGBUF_H_
 
 #include <stdint.h>
+#include "Config.h"
 
 namespace TransferViaSound
 {
@@ -39,10 +40,9 @@ private:
 	int GetOneChar(uint8_t *_data);
 
 private:
-#define DATA_SIZE 512
-	uint8_t buf_[DATA_SIZE];
-	uint16_t head_;
-	uint16_t tail_;
+	uint8_t buf_[Config::TIME_BAND];
+	uint16_t head_;//read
+	uint16_t tail_;//put
 };
 
 } /* namespace TransferViaSound */
