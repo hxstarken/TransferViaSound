@@ -53,7 +53,7 @@ int SoundDevice::Init(void)
 {
 	int err = -1, dir = 0;
 	snd_pcm_hw_params_t *hw_params;
-
+	unsigned long int _size__ = 1024;
 	//-----------------------------------------------------
 	//-------------- 打开发声设备 ---------------------------
 	stream_ = SND_PCM_STREAM_PLAYBACK;
@@ -104,9 +104,10 @@ int SoundDevice::Init(void)
 		goto __alloc_paly_param_err;
 	}
 
+
 	/* Set period size to 32 frames. */
 	snd_pcm_hw_params_set_period_size_near(pcm_play_handle_,
-			hw_params, &buffer_size_, &dir);
+			hw_params, &_size__, &dir);
 
 	snd_pcm_hw_params_free(hw_params);
 
