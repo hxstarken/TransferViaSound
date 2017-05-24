@@ -53,9 +53,14 @@ int SoundDevice::Init(void)
 {
 	int err = -1, dir = 0;
 	snd_pcm_hw_params_t *hw_params;
-	unsigned long int _size__ = 1024;
+	snd_pcm_sw_params_t *sw_params;
+	snd_pcm_uframes_t buffer_size;
+
+//	unsigned long int _size__ = 1024;
+
 	//-----------------------------------------------------
 	//-------------- 打开发声设备 ---------------------------
+	//------------------------------------------------------
 	stream_ = SND_PCM_STREAM_PLAYBACK;
 	err = snd_pcm_open(&pcm_play_handle_, pcm_name_, stream_, open_mode_);
 	if (err < 0)
@@ -68,6 +73,8 @@ int SoundDevice::Init(void)
 	{
 		goto __alloc_paly_param_err;
 	}
+
+	snd_pcm_sw_params_alloca(&sw_params);
 
 	err = snd_pcm_hw_params_any(pcm_play_handle_, hw_params);
 	if (err<0)
@@ -98,6 +105,12 @@ int SoundDevice::Init(void)
 		goto __alloc_paly_param_err;
 	}
 
+
+
+	/* Set period size to 32 frames. */
+//	snd_pcm_hw_params_set_period_size_near(pcm_play_handle_,
+//			hw_params, &buffer_size_, &dir);
+
 	err = snd_pcm_hw_params(pcm_play_handle_, hw_params);
 	if (err<0)
 	{
@@ -105,9 +118,6 @@ int SoundDevice::Init(void)
 	}
 
 
-	/* Set period size to 32 frames. */
-	snd_pcm_hw_params_set_period_size_near(pcm_play_handle_,
-			hw_params, &_size__, &dir);
 
 	snd_pcm_hw_params_free(hw_params);
 
@@ -117,8 +127,21 @@ int SoundDevice::Init(void)
 		goto __alloc_paly_param_err;
 	}
 
+//	snd_pcm_sw_params_current(pcm_play_handle_, sw_params);
+//	err = snd_pcm_sw_params_set_start_threshold(pcm_play_handle_, sw_params, Config::TIME_BAND);
+//	assert(err >= 0);
+//
+//	err = snd_pcm_sw_params_set_stop_threshold(pcm_play_handle_, sw_params, Config::TIME_BAND);
+//	assert(err >= 0);
+//
+//	if (snd_pcm_sw_params(pcm_play_handle_, sw_params) < 0)
+//	{
+//		goto __alloc_paly_param_err;
+//	}
+
 	//-----------------------------------------------------
 	//--------------------打开mic设备-----------------------
+	//------------------------------------------------------
 	stream_ = SND_PCM_STREAM_CAPTURE;
 	err = snd_pcm_open(&pcm_capture_handle_, pcm_name_, stream_, open_mode_);
 	if (err < 0)
@@ -176,6 +199,19 @@ int SoundDevice::Init(void)
 	{
 		goto __alloc_receive_param_err;
 	}
+
+
+//	snd_pcm_sw_params_current(pcm_capture_handle_, sw_params);
+//	err = snd_pcm_sw_params_set_start_threshold(pcm_capture_handle_, sw_params, Config::TIME_BAND);
+//	assert(err >= 0);
+//
+//	err = snd_pcm_sw_params_set_stop_threshold(pcm_capture_handle_, sw_params, Config::TIME_BAND);
+//	assert(err >= 0);
+//
+//	if (snd_pcm_sw_params(pcm_capture_handle_, sw_params) < 0)
+//	{
+//		goto __alloc_receive_param_err;
+//	}
 
 	return 0;
 __alloc_receive_param_err:

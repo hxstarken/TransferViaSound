@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
 	}
 
 	std::thread receive(ParaseFun, &test);
-	sprintf(send_buf, "1234567887654321");
+//	sprintf(send_buf, "1234567887654321");
+	sprintf(send_buf, "D123456789ABC");
 
 	while (1)
 	{

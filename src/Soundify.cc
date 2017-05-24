@@ -23,7 +23,7 @@ static void ParaseFunc(void *arg)
 	int err = 0, i = 0;
 	double current_model = 0, max_model = 0;
 	uint16_t max_model_num = 0;
-	uint16_t freq = 0;
+	int freq = 0;
 	char data = 0;
 	FFT fft;
 	SoundifyUtils soundify_utils;
@@ -49,9 +49,10 @@ static void ParaseFunc(void *arg)
 		fft.DoFFT();
 		//calculate max fft model
 		max_model = 0;
+		max_model_num = 0;
 
 		//TODO
-		for (i=5; i<(Config::TIME_BAND>>2); i++)
+		for (i=0/*Config::BASE_FREQ*Config::TIME_BAND/Config::SAMPLE_RATE*/; i<4096; i++)
 		{
 			current_model =  fft.GetModel(i);
 			if (max_model < current_model)
@@ -61,12 +62,13 @@ static void ParaseFunc(void *arg)
 			}
 		}
 
-		freq = (max_model_num -1)*Config::SAMPLE_RATE/Config::TIME_BAND;
-		printf("freq:%d\n", freq);
+		freq = (max_model_num)*Config::SAMPLE_RATE/Config::TIME_BAND;
+
 		if (freq < Config::BASE_FREQ)
 		{
 			continue;
 		}
+		printf("freq:%d\n", freq);
 		//CalcData
 		data = soundify_utils.CalcData(freq);
 		printf("the data is:%c\n", data);
@@ -176,7 +178,7 @@ int Soundify::Send(uint8_t *msg, int len)
 {
 	int i = 0, j = 0;
 	char *data = (char *)msg;
-	uint16_t freq;
+	int freq;
 	int block = 0;
 
 	int16_t *audio = (int16_t *)malloc(sizeof(int16_t) * len * Config::TIME_BAND);
@@ -191,7 +193,7 @@ int Soundify::Send(uint8_t *msg, int len)
 	{
 		block = i * Config::TIME_BAND;
 		freq = soundify_utils_.CalcFreq(data[i]);
-
+		printf("send freq %d\n", freq);
 		for (j = 0; j < Config::TIME_BAND; j++)
 		{	// Percorre o tamanho de cada banda de frequencia
 			double angle = 2.0 * j * freq * M_PI / Config::SAMPLE_RATE;// Realiza o calculo do angulo da frequencia
